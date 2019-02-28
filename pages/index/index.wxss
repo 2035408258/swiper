@@ -1,19 +1,17 @@
-/**index.wxss**/
-.show_swiper{
-  background-color: #fafafa;
-  overflow: hidden;
+.all{
+  position: relative;
 }
-
-.show_swiper_list {
-  height: 270px;
+.swiper{
+  position: absolute;
+  top:0;
+  left: 0;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content:space-between;
 }
-.swiper_item {
-  float: left; 
+.blue{
+  background: lightblue
 }
-.swiper_item:nth-child(odd){
-  background-color: lightblue;
-  
-}
-.swiper_item:nth-child(even){
-  background-color: lightgreen;
+.green{
+  background: lightgreen
 }

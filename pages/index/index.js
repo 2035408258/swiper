@@ -1,120 +1,74 @@
-//index.js
-//获取应用实例
-var app = getApp()
 Page({
   data: {
-    curIndex: 0,  //当前显示的view下标
-    swiperList: [1, 2, 3, 4, 5, 6, 7, 8, 9], //轮播数据列表
-    winWidth: 0,  //设备宽度；
-    winHeight: 0,   //设备高度；
-    
-    itemWidth: 0, //单个轮播图swiper-item的宽度；
-    itemHeight: 0,//单个轮播图swiper-item的高度；
-    allWidth: 0,  //轮播展示 swiper的总宽度；
-    scale: 0.7,   //  缩放大小倍数；
+    huaw:0, //左移距离 勿改
+    i: 2, //当前最大的下标 勿改
 
-    startClinetX: '', //触摸开始位置；
-    startTimestamp: '', //触摸开始时间；
-    
-    translateDistance: 0,//动画移动的 距离；
-    animationToLarge: {}, //从小变大的动画；
-    animationToSmall: {},
+    list:[1,2,3,4,5,6], //轮播数据
+    w:300,              //item 的宽度 rpx
+    h:500,              //item 的搞度 rpx
+    scale:0.8,          //左右两边的缩放比例
+    duration: 300,      //滑动动画时长 ms
+    autoplay:true,      //是否自动轮播
+    interval: 3000,     //自动切换时间间隔 ms(开启轮播生效)
+
+  },
+  onLoad: function () {
+    //防止一开始左滑
+    var list = this.data.list;
+    list.unshift(list[list.length-1]);
+    list.pop();
+    this.setData({list,huaw:-this.data.w-(this.data.w*3-750)/2});
+
+    if(this.data.autoplay){
+      setInterval(() => {
+        var i = this.data.i;
+        ++i;
+        this.setData({ huaw: this.data.huaw - this.data.w, i: i, d: 'right', change: true })
+      }, this.data.interval)
+    }
+
   },
 
+  // 过渡动画结束时关闭过渡动画change,
+  // 改变数据列表顺序并瞬间恢复原位,覆盖当前效果
+  // 此方法滑动过快时依然存在问题
+  finish(){
+    var list=this.data.list;
+    var d=this.data.d;
+    if(d=='right'){
+      list.push(list[0]);
+      list.shift();
+    }else{
+      list.unshift(list[list.length - 1]);
+      list.pop();
+    }
+    this.setData({ change: false, i: 2, list, huaw: -this.data.w - (this.data.w * 3 - 750) / 2})
+  },
   //触摸开始的事件
   swiperTouchstart: function (e) {
-    // console.log('touchstart',e);
     let startClinetX = e.changedTouches[0].clientX;
     this.setData({
       startClinetX: startClinetX, //触摸开始位置；
       startTimestamp: e.timeStamp, //触摸开始时间；
     })
   },
-
-  //触摸移动中的事件
-  swiperTouchmove: function (e) {
-    // console.log('touchmove',e);
-  },
-
   //触摸结束事件
   swiperTouchend: function (e) {
-    // console.log("触摸结束",e);
-
     let times = e.timeStamp - this.data.startTimestamp, //时间间隔；
         distance = e.changedTouches[0].clientX - this.data.startClinetX; //距离间隔；
+    var swiperList = this.data.swiperList;
+    var i=this.data.i;
     //判断
-    if (times < 500 && Math.abs(distance) > 10) {
-      let curIndex = this.data.curIndex;
-
-      let x0 = this.data.itemWidth,x1 = this.data.translateDistance,x = 0;
-      if ( distance > 0) {
-       
-        curIndex = curIndex - 1
-        if(curIndex < 0){
-          curIndex = 0;
-          x0 = 0;
-        }
-        x = x1 + x0;
+    if (times < 500 && Math.abs(distance) > 10&&!this.data.change) {
+      this.setData({change:true})
+      if (distance > 0) {
+        //左滑
+        this.setData({ huaw: this.data.huaw+this.data.w,i:--i,d:'left'})
       } else {
-      
-        // console.log('+1',x);
-        curIndex = curIndex + 1
-        if (curIndex >= this.data.swiperList.length) {
-          curIndex = this.data.swiperList.length-1;
-          x0 = 0;
-        }
-        x = x1 - x0;
+        //右滑
+        this.setData({ huaw: this.data.huaw - this.data.w,i:++i,d:'right'})
       }
-      this.animationToLarge(curIndex, x);
-      this.animationToSmall(curIndex, x);
-      this.setData({
-        curIndex: curIndex,
-        translateDistance: x
-      })
-      
-    } else {
-      
     }
   },
-  // 动画
-  animationToLarge: function (curIndex,x) {
-   
-    this.animation.translateX(x).scale(1).step()
-    this.setData({
-      animationToLarge: this.animation.export()
-    })
-  },
-  animationToSmall: function (curIndex,x) {
-
-    this.animation.translateX(x).scale(0.7).step()
-    this.setData({
-      animationToSmall: this.animation.export()
-    })
-  },
-
-  onLoad: function () {
-    var that = this
-    
-    wx.getSystemInfo({
-      success: function (res) {
-        let w = res.windowWidth,h = res.windowHeight;
-        let allWidth =  that.data.swiperList.length  * (w * 0.5 );
-
-        that.setData({
-          winWidth: w,
-          winHeight: h, 
-          itemWidth: w*0.5,
-          allWidth: allWidth
-        })
-      },
-    })
-    this.animation = wx.createAnimation({
-      transformOrigin: "50% 50%",
-      duration: 500,
-      timingFunction: "ease-out",
-      delay: 0
-    })
-  },
-
 
 })
