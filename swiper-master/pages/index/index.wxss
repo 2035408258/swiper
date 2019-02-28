@@ -1,0 +1,17 @@
+.all{
+  position: relative;
+}
+.swiper{
+  position: absolute;
+  top:0;
+  left: 0;
+  display: flex;
+  flex-flow: row nowrap;
+  justify-content:space-between;
+}
+.blue{
+  background: lightblue
+}
+.green{
+  background: lightgreen
+}

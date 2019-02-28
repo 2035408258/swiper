@@ -1,0 +1,11 @@
+<view class='all'>
+  <view class='swiper' 
+        bindtouchstart='swiperTouchstart'
+        bindtouchend='swiperTouchend' 
+        style='width:{{list.length*w}}rpx;height:{{h}}rpx;left:{{huaw}}rpx;{{change?"transition: all "+duration+"ms;":""}}' bindtransitionend='finish'>  
+    <view class='item-box  {{item%2==0?"blue":"green"}}' wx:for='{{list}}' wx:key='' 
+        style='width:{{w}}rpx;{{change?"transition: all "+duration+"ms;":""}};{{i==index?"big":"transform: scale("+scale+")"}};hight:{{h}}rpx;width:{{w}}rpx'>
+      {{item}}  
+    </view>
+  </view>
+</view>
